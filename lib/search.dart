@@ -28,6 +28,7 @@ class Index {
   }
 
   void dump(File indexFile, File documentDumpFile) {
+    // todo: compress before writing to/ reading from disk
     const encoder = JsonEncoder();
 
     indexFile.writeAsStringSync(encoder.convert(invertedIndex));
@@ -40,12 +41,21 @@ class Index {
     }
     documents[doc.id] = doc;
 
-    tokenizer.tokenize(doc).toSet().forEach((token) {
+    tokenizer.tokenize(doc.content).toSet().forEach((token) {
       if (invertedIndex.containsKey(token)) {
         invertedIndex[token] = <String>{};
       }
       invertedIndex[token]!.add(doc.id);
     });
+  }
+
+  Set<String> find(String token) {
+    // return the set of all of the document IDs that contain the given token
+    return invertedIndex[token] ?? Set.identity();
+  }
+
+  Document? get(String documentID) {
+    return documents[documentID];
   }
 }
 
@@ -55,9 +65,15 @@ class Searcher {
 
   Searcher(this.tokenizer, this.index);
 
-  // returns an ordered list of search results
-  List<Document> search(String query) {
-    return [];
+  // returns an ordered list of search results by document ID
+  List<String> search(String query) {
+    // right now we just do a simple set intersection to return documents that contain the entire query
+    return tokenizer
+        .tokenize(query)
+        .toSet()
+        .map((queryTerm) => index.find(queryTerm))
+        .reduce((combinedResults, queryResults) => combinedResults.intersection(queryResults))
+        .toList();
   }
 }
 

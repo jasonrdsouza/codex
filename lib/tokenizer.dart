@@ -1,5 +1,4 @@
 import 'package:stemmer/stemmer.dart';
-import 'package:codex/document.dart';
 
 class Tokenizer {
   // From NLTK library
@@ -157,12 +156,7 @@ class Tokenizer {
     return stemmer.stem(token);
   }
 
-  List<String> tokenize(Document doc) {
-    return split(doc.content)
-        .map(normalizeCase)
-        .map(unpunctuate)
-        .map(stem)
-        .where((token) => !isStopWord(token))
-        .toList();
+  List<String> tokenize(String text) {
+    return split(text).map(normalizeCase).map(unpunctuate).map(stem).where((token) => !isStopWord(token)).toList();
   }
 }

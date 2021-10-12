@@ -1,4 +1,10 @@
-An absolute bare-bones web app.
+# Codex
+A personalized read-it-later service.
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+## Todo
+- Search implementation
+- Server-side APIs
+- Reading queue UI
+- Article adding UI
+- Scribe integration
+- See [Dart Neats](https://github.com/google/dart-neats) for other useful packages
