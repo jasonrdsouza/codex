@@ -25,7 +25,3 @@ class Searcher {
         .toList();
   }
 }
-
-void main() {
-  print('Implement a search library');
-}
