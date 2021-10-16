@@ -157,6 +157,11 @@ class Tokenizer {
   }
 
   List<String> tokenize(String text) {
-    return split(text).map(normalizeCase).map(unpunctuate).map(stem).where((token) => !isStopWord(token)).toList();
+    return split(text)
+        .map(normalizeCase)
+        .map(unpunctuate)
+        .map(stem)
+        .where((token) => !isStopWord(token))
+        .toList();
   }
 }

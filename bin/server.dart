@@ -31,7 +31,8 @@ Future main() async {
 }
 
 // Serve files from the file system.
-final _staticHandler = shelf_static.createStaticHandler('build', defaultDocument: 'index.html');
+final _staticHandler =
+    shelf_static.createStaticHandler('build', defaultDocument: 'index.html');
 
 // Router instance to handler requests.
 final _router = shelf_router.Router()
@@ -46,7 +47,8 @@ final _router = shelf_router.Router()
 
 Response helloWorldHandler(Request request) => Response.ok('Hello, World!');
 
-Response timeHandler(Request request) => Response.ok(DateTime.now().toUtc().toIso8601String());
+Response timeHandler(Request request) =>
+    Response.ok(DateTime.now().toUtc().toIso8601String());
 
 Response addArticleHandler(Request request) {
   // todo:
@@ -70,7 +72,8 @@ Response sumHandler(request, String a, String b) {
   final aNum = int.parse(a);
   final bNum = int.parse(b);
   return Response.ok(
-    const JsonEncoder.withIndent(' ').convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
+    const JsonEncoder.withIndent(' ')
+        .convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
     headers: {
       'content-type': 'application/json',
       'Cache-Control': 'public, max-age=604800',
