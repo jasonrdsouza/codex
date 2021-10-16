@@ -66,7 +66,9 @@ void main() {
       index.dump(indexFile, documentDumpFile);
 
       var deserializedIndex = Index.fromFile(tokenizer, indexFile, documentDumpFile);
-      expect(index, equals(deserializedIndex));
+      expect(index.size(), deserializedIndex.size());
+      expect(index.invertedIndex, equals(deserializedIndex.invertedIndex));
+      expect(index.documents, equals(deserializedIndex.documents));
     });
   });
 }
