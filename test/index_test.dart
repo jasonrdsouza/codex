@@ -7,8 +7,10 @@ import 'package:test/test.dart';
 
 void main() {
   var testDocuments = [
-    Document('1', 'http://example.com/1', 'Test Document 1', 'This is the first test document'),
-    Document('2', 'http://example.com/2', 'Test Document 2', 'The second test document'),
+    Document('1', 'http://example.com/1', 'Test Document 1',
+        'This is the first test document'),
+    Document('2', 'http://example.com/2', 'Test Document 2',
+        'The second test document'),
     Document('3', 'http://example.com/3', 'Test Document 3', 'Document 3'),
   ];
 
@@ -65,7 +67,8 @@ void main() {
       var documentDumpFile = File('test/documents.json');
       index.dump(indexFile, documentDumpFile);
 
-      var deserializedIndex = Index.fromFile(tokenizer, indexFile, documentDumpFile);
+      var deserializedIndex =
+          Index.fromFile(tokenizer, indexFile, documentDumpFile);
       expect(index.size(), deserializedIndex.size());
       expect(index.invertedIndex, equals(deserializedIndex.invertedIndex));
       expect(index.documents, equals(deserializedIndex.documents));

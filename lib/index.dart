@@ -16,18 +16,23 @@ class Index {
   Index.fromFile(this.tokenizer, File indexFile, File documentDumpFile) {
     const decoder = JsonDecoder();
 
-    var serializableInvertedIndex = decoder.convert(indexFile.readAsStringSync());
-    invertedIndex = (serializableInvertedIndex as Map<String, dynamic>)
-        .map((k, v) => MapEntry(k, (v as List<dynamic>).map((e) => e.toString()).toSet()));
-    var serializableDocuments = decoder.convert(documentDumpFile.readAsStringSync());
-    documents = (serializableDocuments as Map<String, dynamic>).map((k, v) => MapEntry(k, Document.fromJson(v)));
+    var serializableInvertedIndex =
+        decoder.convert(indexFile.readAsStringSync());
+    invertedIndex = (serializableInvertedIndex as Map<String, dynamic>).map(
+        (k, v) =>
+            MapEntry(k, (v as List<dynamic>).map((e) => e.toString()).toSet()));
+    var serializableDocuments =
+        decoder.convert(documentDumpFile.readAsStringSync());
+    documents = (serializableDocuments as Map<String, dynamic>)
+        .map((k, v) => MapEntry(k, Document.fromJson(v)));
   }
 
   void dump(File indexFile, File documentDumpFile) {
     // todo: compress before writing to/ reading from disk
     const encoder = JsonEncoder();
 
-    var serializableInvertedIndex = invertedIndex.map((k, v) => MapEntry(k, v.toList()));
+    var serializableInvertedIndex =
+        invertedIndex.map((k, v) => MapEntry(k, v.toList()));
     indexFile.writeAsStringSync(encoder.convert(serializableInvertedIndex));
     documentDumpFile.writeAsStringSync(encoder.convert(documents));
   }

@@ -33,5 +33,10 @@ class Document {
       };
 
   @override
-  bool operator ==(d) => d is Document && d.id == id && d.url == url && d.title == title && d.content == content;
+  bool operator ==(d) =>
+      d is Document &&
+      d.id == id &&
+      d.url == url &&
+      d.title == title &&
+      d.content == content;
 }

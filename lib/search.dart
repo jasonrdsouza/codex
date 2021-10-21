@@ -21,7 +21,8 @@ class Searcher {
         .tokenize(query)
         .toSet()
         .map((queryTerm) => index.find(queryTerm))
-        .reduce((combinedResults, queryResults) => combinedResults.intersection(queryResults))
+        .reduce((combinedResults, queryResults) =>
+            combinedResults.intersection(queryResults))
         .toList();
   }
 }

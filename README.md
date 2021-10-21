@@ -3,10 +3,16 @@ A personalized read-it-later service.
 
 ## Development
 
-Run tests:
+Install dependencies:
 
 ```sh
-dart test --chain-stack-traces
+dart pub get
+```
+
+Run tests (and format + lint code):
+
+```sh
+dart format . && dart analyze && dart test --chain-stack-traces
 ```
 
 Build frontend (with hot reload):
