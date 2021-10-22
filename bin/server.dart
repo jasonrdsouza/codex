@@ -1,49 +1,67 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codex/config.dart';
+import 'package:codex/db.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'package:shelf_static/shelf_static.dart' as shelf_static;
 
-Future main() async {
-  // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
+class Server {
+  Config config;
+  InternetAddress listenAddr = InternetAddress.loopbackIPv4;
+  late final int port;
+  late DB db;
+  late Handler staticHandler;
+  late shelf_router.Router router;
 
-  // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
-  final cascade = Cascade()
-      // First, serve files from the 'public' directory
-      .add(_staticHandler)
-      // If a corresponding file is not found, send requests to a `Router`
-      .add(_router);
+  Server(this.config) {
+    port = config.port();
+    db = DB(config.dbPath());
+    staticHandler = shelf_static.createStaticHandler(config.staticDir(),
+        defaultDocument: 'index.html');
+    router = registerRoutes();
+  }
 
-  // See https://pub.dev/documentation/shelf/latest/shelf_io/serve.html
-  final server = await shelf_io.serve(
-    // See https://pub.dev/documentation/shelf/latest/shelf/logRequests.html
-    logRequests()
-        // See https://pub.dev/documentation/shelf/latest/shelf/MiddlewareExtensions/addHandler.html
-        .addHandler(cascade.handler),
-    InternetAddress.loopbackIPv4, // Allows only local connections
-    port,
-  );
+  shelf_router.Router registerRoutes() {
+    return shelf_router.Router()
+      ..get('/helloworld', helloWorldHandler)
+      ..get('/time', timeHandler)
+      ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', sumHandler)
+      ..get('/dbTest/<value>', dbTestHandler)
+      ..post('/api/addArticle', addArticleHandler)
+      ..post('/api/readArticle', readArticleHandler);
+  }
 
-  print('Serving at http://${server.address.host}:${server.port}');
+  Response dbTestHandler(Request request, String value) {
+    db.insertIntegTest(value);
+    return Response.ok('Inserted $value');
+  }
+
+  Future run() async {
+    // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
+    final cascade = Cascade()
+        // First, serve files from the static directory
+        .add(staticHandler)
+        // If a corresponding file is not found, send requests to a `Router`
+        .add(router);
+
+    // See https://pub.dev/documentation/shelf/latest/shelf_io/serve.html
+    final server = await shelf_io.serve(
+      // See https://pub.dev/documentation/shelf/latest/shelf/logRequests.html
+      logRequests()
+          // See https://pub.dev/documentation/shelf/latest/shelf/MiddlewareExtensions/addHandler.html
+          .addHandler(cascade.handler),
+      listenAddr, // Allows only local connections
+      port,
+    );
+
+    print('Serving at http://${server.address.host}:${server.port}');
+  }
 }
 
-// Serve files from the file system.
-final _staticHandler =
-    shelf_static.createStaticHandler('build', defaultDocument: 'index.html');
-
-// Router instance to handler requests.
-final _router = shelf_router.Router()
-  ..get('/helloworld', helloWorldHandler)
-  ..get('/time', timeHandler)
-  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', sumHandler)
-  ..post('/api/addArticle', addArticleHandler)
-  ..post('/api/readArticle', readArticleHandler);
-// add handlers for:
-// - backing up the search index (write to file then backup to cloud bucket)
-// - backing up the db (maybe this can be the same handler)
+Future main() async => Server(Config.standard()).run();
 
 Response helloWorldHandler(Request request) => Response.ok('Hello, World!');
 

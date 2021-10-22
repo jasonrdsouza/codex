@@ -27,5 +27,11 @@ Build frontend and run server:
 webdev build --release --output web:build; and dart run bin/server.dart
 ```
 
+Database shell:
+
+```sh
+sqlite3 db/codex.db
+```
+
 ## Reference
 - See [Dart Neats](https://github.com/google/dart-neats) for other useful packages

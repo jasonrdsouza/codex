@@ -11,3 +11,9 @@ doc/api/
 # Test artifacts
 test/*.json
 
+# Database
+db/
+
+# Service configuration
+config.yaml
+
