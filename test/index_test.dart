@@ -7,10 +7,8 @@ import 'package:test/test.dart';
 
 void main() {
   var testDocuments = [
-    Document('1', 'http://example.com/1', 'Test Document 1',
-        'This is the first test document'),
-    Document('2', 'http://example.com/2', 'Test Document 2',
-        'The second test document'),
+    Document('1', 'http://example.com/1', 'Test Document 1', 'This is the first test document'),
+    Document('2', 'http://example.com/2', 'Test Document 2', 'The second test document'),
     Document('3', 'http://example.com/3', 'Test Document 3', 'Document 3'),
   ];
 
@@ -40,18 +38,22 @@ void main() {
 
     test('vends requested documents by ID', () {
       var index = Index(Tokenizer());
-      testDocuments.forEach((doc) => index.add(doc));
+      for (var doc in testDocuments) {
+        index.add(doc);
+      }
 
       expect(index.size(), equals(testDocuments.length));
 
-      testDocuments.forEach((doc) {
+      for (var doc in testDocuments) {
         expect(index.get(doc.id), equals(doc));
-      });
+      }
     });
 
     test('returns documents associated with a given token', () {
       var index = Index(Tokenizer());
-      testDocuments.forEach((doc) => index.add(doc));
+      for (var doc in testDocuments) {
+        index.add(doc);
+      }
 
       expect(index.find('superfluous'), equals(<String>{}));
       expect(index.find('test'), equals({'1', '2'}));
@@ -61,14 +63,15 @@ void main() {
     test('serializes to disk correctly', () {
       var tokenizer = Tokenizer();
       var index = Index(tokenizer);
-      testDocuments.forEach((doc) => index.add(doc));
+      for (var doc in testDocuments) {
+        index.add(doc);
+      }
 
       var indexFile = File('test/index.json');
       var documentDumpFile = File('test/documents.json');
       index.dump(indexFile, documentDumpFile);
 
-      var deserializedIndex =
-          Index.fromFile(tokenizer, indexFile, documentDumpFile);
+      var deserializedIndex = Index.fromFile(tokenizer, indexFile, documentDumpFile);
       expect(index.size(), deserializedIndex.size());
       expect(index.invertedIndex, equals(deserializedIndex.invertedIndex));
       expect(index.documents, equals(deserializedIndex.documents));

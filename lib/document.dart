@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:quiver/core.dart';
+
 class Document {
   late String id;
   late String url; // todo: better data type?
@@ -33,10 +35,9 @@ class Document {
       };
 
   @override
-  bool operator ==(d) =>
-      d is Document &&
-      d.id == id &&
-      d.url == url &&
-      d.title == title &&
-      d.content == content;
+  bool operator ==(Object other) =>
+      other is Document && other.id == id && other.url == url && other.title == title && other.content == content;
+
+  @override
+  int get hashCode => hash4(id, url, title, content);
 }

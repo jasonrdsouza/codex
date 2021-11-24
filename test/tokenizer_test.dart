@@ -26,9 +26,9 @@ void main() {
         ['rational', 'ration'],
         ['relational', 'relat'],
       ];
-      testWords.forEach((word) {
+      for (var word in testWords) {
         expect(Tokenizer().stem(word[0]), equals(word[1]));
-      });
+      }
     });
   });
 }
