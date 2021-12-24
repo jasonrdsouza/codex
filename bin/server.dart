@@ -19,8 +19,7 @@ class Server {
   Server(this.config) {
     port = config.port();
     db = DB(config.dbPath());
-    staticHandler = shelf_static.createStaticHandler(config.staticDir(),
-        defaultDocument: 'index.html');
+    staticHandler = shelf_static.createStaticHandler(config.staticDir(), defaultDocument: 'index.html');
     router = registerRoutes();
   }
 
@@ -29,14 +28,47 @@ class Server {
       ..get('/helloworld', helloWorldHandler)
       ..get('/time', timeHandler)
       ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', sumHandler)
-      ..get('/dbTest/<value>', dbTestHandler)
       ..post('/api/addArticle', addArticleHandler)
+      ..get('/api/unreadArticles', fetchUnreadArticlesHandler)
       ..post('/api/readArticle', readArticleHandler);
   }
 
-  Response dbTestHandler(Request request, String value) {
-    db.insertIntegTest(value);
-    return Response.ok('Inserted $value');
+  Future<Response> addArticleHandler(Request request) {
+    // todo:
+    // - server-side set fields such as "createdAt" (see scribe for more ideas)
+    // - fetch (and archive) via Scribe
+    // - persist in Sqlite (at least the reading queue)
+    // - use scribe response to update search index
+    return request
+        .readAsString()
+        .then((String body) {
+          var item = QueueItem.fromJson(json.decode(body));
+          db.addToReadingQueue(item);
+        })
+        .then((_) => Response.ok('Article added'))
+        .onError((error, stackTrace) {
+          print(stackTrace);
+          return Response.internalServerError(body: error.toString());
+        });
+  }
+
+  Response fetchUnreadArticlesHandler(Request request) {
+    final items = db.fetchReadingQueue();
+    return Response.ok(json.encode(items));
+  }
+
+  Future<Response> readArticleHandler(Request request) {
+    return request
+        .readAsString()
+        .then((String body) {
+          var item = QueueItem.fromJson(json.decode(body));
+          db.markAsRead(item);
+        })
+        .then((_) => Response.ok('Article marked as read'))
+        .onError((error, stackTrace) {
+          print(stackTrace);
+          return Response.internalServerError(body: error.toString());
+        });
   }
 
   Future run() async {
@@ -65,33 +97,13 @@ Future main() async => Server(Config.standard()).run();
 
 Response helloWorldHandler(Request request) => Response.ok('Hello, World!');
 
-Response timeHandler(Request request) =>
-    Response.ok(DateTime.now().toUtc().toIso8601String());
-
-Response addArticleHandler(Request request) {
-  // todo:
-  // - JSON parse request body
-  // - define fields such as "articleUrl", "addToReadingQueue", "refreshCache", etc
-  // - server-side set fields such as "createdAt" (see scribe for more ideas)
-  // - fetch (and archive) via Scribe
-  // - use scribe response to update search index
-  // - persist in Sqlite (at least the reading queue)
-  return Response.ok('Unimplemented');
-}
-
-Response readArticleHandler(Request request) {
-  // todo:
-  // - define Json fields like "articleUrl"
-  // - track server-side when the article was read (Sqlite)
-  return Response.ok('Unimplemented');
-}
+Response timeHandler(Request request) => Response.ok(DateTime.now().toUtc().toIso8601String());
 
 Response sumHandler(request, String a, String b) {
   final aNum = int.parse(a);
   final bNum = int.parse(b);
   return Response.ok(
-    const JsonEncoder.withIndent(' ')
-        .convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
+    const JsonEncoder.withIndent(' ').convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
     headers: {
       'content-type': 'application/json',
       'Cache-Control': 'public, max-age=604800',
