@@ -15,7 +15,8 @@ class Document {
     const decoder = JsonDecoder();
 
     var decodedDoc = decoder.convert(jsonString) as Map<String, String>;
-    return Document(decodedDoc['id']!, decodedDoc['url']!, decodedDoc['title']!, decodedDoc['content']!);
+    return Document(decodedDoc['id']!, decodedDoc['url']!, decodedDoc['title']!,
+        decodedDoc['content']!);
   }
 
   Document.fromJson(Map<String, dynamic> json)
@@ -33,7 +34,11 @@ class Document {
 
   @override
   bool operator ==(Object other) =>
-      other is Document && other.id == id && other.url == url && other.title == title && other.content == content;
+      other is Document &&
+      other.id == id &&
+      other.url == url &&
+      other.title == title &&
+      other.content == content;
 
   @override
   int get hashCode => hash4(id, url, title, content);

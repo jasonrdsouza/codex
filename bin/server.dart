@@ -19,7 +19,8 @@ class Server {
   Server(this.config) {
     port = config.port();
     db = DB(config.dbPath());
-    staticHandler = shelf_static.createStaticHandler(config.staticDir(), defaultDocument: 'index.html');
+    staticHandler = shelf_static.createStaticHandler(config.staticDir(),
+        defaultDocument: 'index.html');
     router = registerRoutes();
   }
 
@@ -97,13 +98,15 @@ Future main() async => Server(Config.standard()).run();
 
 Response helloWorldHandler(Request request) => Response.ok('Hello, World!');
 
-Response timeHandler(Request request) => Response.ok(DateTime.now().toUtc().toIso8601String());
+Response timeHandler(Request request) =>
+    Response.ok(DateTime.now().toUtc().toIso8601String());
 
 Response sumHandler(request, String a, String b) {
   final aNum = int.parse(a);
   final bNum = int.parse(b);
   return Response.ok(
-    const JsonEncoder.withIndent(' ').convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
+    const JsonEncoder.withIndent(' ')
+        .convert({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
     headers: {
       'content-type': 'application/json',
       'Cache-Control': 'public, max-age=604800',

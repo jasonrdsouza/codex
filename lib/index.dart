@@ -27,6 +27,14 @@ class Index {
         .map((k, v) => MapEntry(k, Document.fromJson(v)));
   }
 
+  @override
+  String toString() {
+    const encoder = JsonEncoder.withIndent('  ');
+    var serializableInvertedIndex =
+        invertedIndex.map((k, v) => MapEntry(k, v.toList()));
+    return encoder.convert(serializableInvertedIndex);
+  }
+
   void dump(File indexFile, File documentDumpFile) {
     // todo: compress before writing to/ reading from disk
     const encoder = JsonEncoder();

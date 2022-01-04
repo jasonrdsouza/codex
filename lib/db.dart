@@ -6,7 +6,8 @@ class DB {
   DB(String filename) : sqliteDB = sqlite3.open(filename);
 
   void addToReadingQueue(QueueItem i) {
-    sqliteDB.execute('INSERT INTO readingQueue (url, read) VALUES(?, ?)', [i.url, i.read ? 1 : 0]);
+    sqliteDB.execute('INSERT INTO readingQueue (url, read) VALUES(?, ?)',
+        [i.url, i.read ? 1 : 0]);
   }
 
   void markAsRead(QueueItem i) {
@@ -14,7 +15,8 @@ class DB {
   }
 
   List<QueueItem> fetchReadingQueue() {
-    final ResultSet resultSet = sqliteDB.select('SELECT url, read from readingQueue');
+    final ResultSet resultSet =
+        sqliteDB.select('SELECT url, read from readingQueue');
     return resultSet.map((row) => QueueItem.fromRow(row)).toList();
   }
 }

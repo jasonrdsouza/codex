@@ -7,10 +7,30 @@ import 'package:test/test.dart';
 
 void main() {
   var testDocuments = [
-    Document('1', 'http://example.com/1', 'Test Document 1', 'This is the first test document'),
-    Document('2', 'http://example.com/2', 'Test Document 2', 'The second test document'),
+    Document('1', 'http://example.com/1', 'Test Document 1',
+        'This is the first test document'),
+    Document('2', 'http://example.com/2', 'Test Document 2',
+        'The second test document'),
     Document('3', 'http://example.com/3', 'Test Document 3', 'Document 3'),
   ];
+
+  group('Russ Cox Test', () {
+    // https://swtch.com/~rsc/regexp/regexp4.html
+    var corpus = [
+      Document('1', 'http://swtch.com/doc1', 'Doc1', 'Google Code Search'),
+      Document(
+          '2', 'http://swtch.com/doc2', 'Doc2', 'Google Code Project Hosting'),
+      Document('3', 'http://swtch.com/doc3', 'Doc3', 'Google Web Search'),
+    ];
+
+    test('inverted index correctly generated', () {
+      var index = Index(Tokenizer());
+      for (var doc in corpus) {
+        index.add(doc);
+      }
+      //print(index);
+    });
+  });
 
   group('Index', () {
     test('can be initialized', () {
@@ -71,7 +91,8 @@ void main() {
       var documentDumpFile = File('test/documents.json');
       index.dump(indexFile, documentDumpFile);
 
-      var deserializedIndex = Index.fromFile(tokenizer, indexFile, documentDumpFile);
+      var deserializedIndex =
+          Index.fromFile(tokenizer, indexFile, documentDumpFile);
       expect(index.size(), deserializedIndex.size());
       expect(index.invertedIndex, equals(deserializedIndex.invertedIndex));
       expect(index.documents, equals(deserializedIndex.documents));

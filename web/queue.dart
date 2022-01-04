@@ -4,8 +4,10 @@ void main() {
   print("Reading queue initialized");
 
   InputElement inputBox = querySelector(".inputField input") as InputElement;
-  ButtonElement addButton = querySelector(".inputField button") as ButtonElement;
-  UListElement readingListElement = querySelector(".readingList") as UListElement;
+  ButtonElement addButton =
+      querySelector(".inputField button") as ButtonElement;
+  UListElement readingListElement =
+      querySelector(".readingList") as UListElement;
   SpanElement numUnreadElement = querySelector(".numUnread") as SpanElement;
 
   ReadingQueue queue = ReadingQueue(); // todo: pull this from server
